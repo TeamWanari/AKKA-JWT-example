@@ -3,7 +3,8 @@ package com.wanari.jwt.example.resourceserver
 import akka.actor.ActorSystem
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.server.Route
-import com.wanari.jwt.example.resourceserver.api.SecretApi
+import com.wanari.jwt.example.resourceserver.api.{JwtAuthentication, SecretApi}
+import com.wanari.jwt.example.resourceserver.config.Config
 
 import scala.concurrent.{ExecutionContextExecutor, Future}
 import scala.util.{Failure, Success}
@@ -22,7 +23,11 @@ object Main extends App {
 
   def bindApi(): Future[Http.ServerBinding] = {
 
-    val secretApi = new SecretApi()
+    val config = new Config()
+
+    val jwtAuth = new JwtAuthentication(config.jwtConf)
+
+    val secretApi = new SecretApi(jwtAuth)
 
     def routes: Route = {
       secretApi.getSecret
